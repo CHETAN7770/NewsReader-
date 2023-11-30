@@ -30,36 +30,29 @@ export default function SignUp() {
       return;
     }
 
-    // Additional validations, you can customize these based on your requirements
-    // For example, you can use regular expressions for more complex validation
-
-    // Email validation
+    
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError('Invalid email address');
       return;
     }
 
-    // Phone number validation
     const phoneRegex = /^\d{10}$/;
     if (!phoneRegex.test(phoneNumber)) {
       setError('Phone number must be 10 digits long and contain only numbers');
       return;
     }
 
-    // Password length validation
     if (password.length < 6) {
       setError('Password must be at least 6 characters long');
       return;
     }
 
-    // Clear any previous error messages
     setError('');
 
-    // Proceed with user registration
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Clear the form
+       
         setFirstName('');
         setLastName('');
         setEmail('');
@@ -68,7 +61,6 @@ export default function SignUp() {
         setConfirmPassword('');
         setRememberMe(false);
 
-        // Show success alert
         Swal.fire({
           title: 'Signup Successful!',
           text: 'You can now log in with your credentials.',
@@ -78,7 +70,7 @@ export default function SignUp() {
         });
       })
       .then(() => {
-        // Redirect to login page
+       
         router.push('/login');
       })
     
@@ -89,10 +81,10 @@ export default function SignUp() {
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden">
-      <div className="w-full p-6 bg-white rounded-md shadow-md lg:max-w-xl">
-        <h1 className="text-3xl font-bold text-center text-gray-700">
-          Sign Up
+    <div className="flex flex-col items-center justify-center min-h-screen overflow-hidden">
+    <div className="w-full p-6 bg-white rounded-md shadow-md lg:max-w-xl md:w-3/4 sm:w-11/12">
+      <h1 className="text-3xl font-bold text-center text-gray-700 mb-4">
+        Sign Up
         </h1>
         {error && (
           <p className="text-red-500 text-sm mb-4 text-center">{error}</p>

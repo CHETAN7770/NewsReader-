@@ -14,6 +14,12 @@ pnpm dev
 bun dev
 ```
 
+
+## After the Default page of next js open 
+open [http://localhost:3000/login] for login 
+open [http://localhost:3000/login] for Signup 
+
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.

@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { useRouter } from 'next/router';
 import { db } from '../src/app/Firebase';
 import { auth } from '../src/app/Firebase';
+import { signInWithEmailAndPassword  ,signOut } from "firebase/auth";
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import Swal from 'sweetalert2';
+
 
 const News = () => {
   const router = useRouter();
@@ -21,11 +24,20 @@ const News = () => {
     trackUserInteraction(article);
     const { title, description, urlToImage, content } = article;
 
-    // Push to the router with the appropriate pathname and query parameters
+    // Push to
     router.push({
       pathname: '/ArticleDetail',
       query: { title, description, urlToImage, content },
     });
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/login'); // Redirect to the home page or any other route after logout
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   const toggleHeart = async (article) => {
@@ -66,6 +78,22 @@ const News = () => {
 
       // Update local storage
       localStorage.setItem('likedArticles', JSON.stringify(updatedLikedArticles));
+
+      if (isLiked) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Removed from Favorites!',
+          showConfirmButton: false,
+          timer: 1500, // Automatically close after 1.5 seconds
+        });
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: 'Added to Favorites!',
+          showConfirmButton: false,
+          timer: 1500, // Automatically close after 1.5 seconds
+        });
+      }
     } catch (error) {
       console.error('Error toggling heart:', error);
     }
@@ -134,15 +162,36 @@ const News = () => {
 
   return (
     <div className="container mx-auto mt-8">
+      <div className="relative p-4">
+        <button
+          onClick={handleLogout}
+          className="text-red-600 hover:underline"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            className="w-5 h-5 inline-block mr-2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M14 5l7 7m0 0l-7 7m7-7H3"
+            />
+          </svg>
+          Sign out
+        </button>
+      </div>
       <button
         onClick={toggleGridView}
         className="mb-4 bg-blue-500 text-white px-4 py-2 rounded-md"
       >
         {isGridView ? "Switch to List View" : "Switch to Grid View"}
       </button>
-      <div className={isGridView ? "grid grid-cols-3 gap-4" : ""}>
+       <div className={isGridView ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4" : "grid grid-cols-1 gap-4"}>
         {selectedArticles.length > 0 ? (
-          // Render only the selected articles
           selectedArticles.map((selectedArticle, index) => (
             <div key={index} className="border p-4 rounded-md relative">
               <img
@@ -157,6 +206,7 @@ const News = () => {
                   style={{
                     color: likedArticles.some((likedArticle) => likedArticle.url === selectedArticle.url) ? 'red' : 'black',
                     fontSize: '30px',
+                    marginRight: '12px'
                   }}
                 >
                   &#x2665;
@@ -168,13 +218,13 @@ const News = () => {
             </div>
           ))
         ) : (
-          // Render the entire list of articles
           newsData.map((article) => (
             <div key={article.url} className="border p-4 rounded-md relative">
               <img
                 src={article.urlToImage}
                 alt={article.title}
                 className="mb-2 w-full h-48 object-cover rounded-md"
+                style={{ cursor: 'pointer' }}
                 onClick={() => handleReadMore(article)}
               />
               <div className="absolute top-0 right-0 p-2">
@@ -183,6 +233,7 @@ const News = () => {
                   style={{
                     color: likedArticles.some((likedArticle) => likedArticle.url === article.url) ? 'red' : 'black',
                     fontSize: '30px',
+                    marginRight: '12px'
                   }}
                 >
                   &#x2665;
@@ -197,6 +248,9 @@ const News = () => {
       </div>
     </div>
   );
+  
+  
+  
 };
 
 export default News;
